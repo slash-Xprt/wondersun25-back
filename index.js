@@ -76,7 +76,7 @@ const contactValidation = [
   
   body('email')
     .isEmail().withMessage('Valid email is required')
-    .normalizeEmail()
+    .normalizeEmail({ gmail_remove_dots: false })
     .isLength({ max: 100 }).withMessage('Email is too long'),
   
   body('subject')
