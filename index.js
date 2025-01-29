@@ -39,13 +39,31 @@ app.use('/api/newsletter', limiter);
 
 // Email transporter configuration
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT || '465'),
-  secure: true,
+  host: process.env.SMTP_HOST || 'ssl0.ovh.net',  // OVH SMTP server
+  port: parseInt(process.env.SMTP_PORT || '465'),  // OVH SSL port
+  secure: true,  // true for SSL
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
+    user: process.env.SMTP_USER,  // your full OVH email
+    pass: process.env.SMTP_PASS,  // your OVH email password
   },
+  tls: {
+    rejectUnauthorized: false  // Only if you have certificate issues
+  }
+});
+
+// Verify email configuration
+transporter.verify(function(error, success) {
+  if (error) {
+    console.error('Email configuration error:', error);
+    console.error('Email settings:', {
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT,
+      user: process.env.SMTP_USER ? '***@***' : 'not set',
+      pass: process.env.SMTP_PASS ? '****' : 'not set'
+    });
+  } else {
+    console.log('Email server is ready to send messages');
+  }
 });
 
 // Validation middleware
